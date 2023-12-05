@@ -147,7 +147,7 @@ def main():
 
     # Add a logo
     with logo_col:
-        logo = st.image("/home/zoetustain/code/zulu-tango/news_and_echo_bubbles_streamlit/News_logo.png", width=250)
+        logo = st.image("https://raw.githubusercontent.com/zulu-tango/news_and_echo_bubbles_streamlit/blob/61e65296356deb4d54d33f6d8fe0ceb37a01917e/images/News_logo.png", width=250)
 
     # Boxed header
     with header_col:
@@ -159,7 +159,7 @@ def main():
             # Add the action you want when the logo is clicked
 
         # Logo image
-        st.image("/home/zoetustain/code/zulu-tango/news_and_echo_bubbles/images/world_flag.png", width=50)
+        st.image("https://raw.githubusercontent.com/zulu-tango/news_and_echo_bubbles_streamlit/master/images/world_flag.png", width=50)
 
         # world = st.image("/home/zoetustain/code/zulu-tango/news_and_echo_bubbles/images/world_flag.png", width=50)
         # image_world = st.image('/home/zoetustain/code/zulu-tango/news_and_echo_bubbles/images/world_flag.png', width=100)
