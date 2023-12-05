@@ -5,11 +5,15 @@ from datetime import date, timedelta
 import os
 import ast
 from collections import Counter
+st.set_page_config(page_title="News and Biases",layout="wide")
 
-path = os.getcwd()
+@st.cache_data
+def load_data():
+    data = pd.read_csv('https://docs.google.com/spreadsheets/d/e/2PACX-1vSeyYvY90yVnOHNhcuIVla0yLYl5bsaWmFvPKWvBdHk09SEseL5HNpUCuCpcPq5OkbBStoN5iYvaPqv/pub?output=csv')
+    return data
 
 def trending_topics():
-    df = pd.read_csv(f'{path}/raw_data/base_table_{date.today()}.csv')
+    df = load_data()
     for index, row in enumerate(df.keywords):
         df.keywords[index] = ast.literal_eval(df.keywords[index])
 
@@ -84,7 +88,7 @@ def search_keyword(topic):
     return output_df_ll[:2], output_df_l[:2], output_df_c[:2], output_df_r[:2], output_df_rr[:2]
 
 def biases():
-    df = pd.read_csv(f'{path}/raw_data/base_table_{date.today()}.csv')
+    df = load_data()
     for index, row in enumerate(df.keywords):
         df.keywords[index] = ast.literal_eval(df.keywords[index])
 
@@ -140,7 +144,6 @@ def color_cells_row_wise(row):
 
 
 def main():
-    st.set_page_config(page_title="News and Biases",layout="wide")
     #pd.set_option('display.max_colwidth', None)
 
     container = st.container()
