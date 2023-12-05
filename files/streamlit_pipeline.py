@@ -110,10 +110,6 @@ def biases():
 
     return df_ll, df_l, df_c, df_r, df_rr
 
-if __name__ == "__main__":
-    print(search_keyword('biden'))
-
-
 def trending():
     # TODO: code trending topics function
     topic_1, topic_2, topic_3, topic_4, topic_5 = trending_topics()
@@ -151,7 +147,7 @@ def main():
 
     # Add a logo
     with logo_col:
-        logo = st.image("/home/zoetustain/code/zulu-tango/news_and_echo_bubbles/News_logo.png", width=250)
+        logo = st.image("/home/zoetustain/code/zulu-tango/news_and_echo_bubbles_streamlit/News_logo.png", width=250)
 
     # Boxed header
     with header_col:
