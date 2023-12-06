@@ -9,19 +9,44 @@ import numpy as np
 from streamlit_card import card
 from collections import Counter
 
+from google.oauth2 import service_account
+from google.cloud import bigquery
+
+# Create API client.
+credentials = service_account.Credentials.from_service_account_info(
+    st.secrets["gcp_service_account"]
+)
+client = bigquery.Client(credentials=credentials)
+
+GCP_PROJECT = 'news-and-echo-bubbles'
+
+@st.cache_data
+def cached_data():
+    '''function that returns the full master district df.
+    Dataframe contains district name (primary key), lat_lons for the center,
+    lat_lons for the edges of rectangle around area, and the area of the
+    rectangle in Hectares'''
+
+    query = f"""
+            SELECT *
+            FROM `{GCP_PROJECT}.preproc_scraped_news.scraped_news_preprocessed_2023_12_06`
+        """
+
+    query_job = client.query(query)
+    result = query_job.result()
+    df = result.to_dataframe()
+
+    for index, row in enumerate(df.keywords):
+        df.keywords[index] = ast.literal_eval(df.keywords[index])
+
+    df['pdate']= pd.to_datetime(df['pdate']).dt.date
+    return df
+
 #from PIL import Image
 #from wordcloud import WordCloud, STOPWORDS, ImageColorGenerator
 
 st.set_page_config(page_title="News and Biases",layout="wide")
 
-@st.cache_data
-def cached_data():
-    data = pd.read_csv('https://docs.google.com/spreadsheets/d/e/2PACX-1vSeyYvY90yVnOHNhcuIVla0yLYl5bsaWmFvPKWvBdHk09SEseL5HNpUCuCpcPq5OkbBStoN5iYvaPqv/pub?output=csv')
-    for index, row in enumerate(data.keywords):
-        data.keywords[index] = ast.literal_eval(data.keywords[index])
-
-    data['pdate']= pd.to_datetime(data['pdate']).dt.date
-    return data
 
 @st.cache_data
 def trending_topics():
@@ -355,12 +380,16 @@ def page_home():
         lst1.extend(lst4)
         lst1.extend(lst5)
 
-
+        # if "selected_option" not in st.session_state:
+        #     st.session_state.selected_option = lst1[0]
+        # st.session_state.selected_option = None
+        ##st.session_state.selected_option = st.selectbox("Select an option:", lst1)
+        # print(selected_option)
+        # st.session_state.selected_option = selected_option
         if "selected_option" not in st.session_state:
             st.session_state.selected_option = lst1[0]
 
-        selected_option = st.selectbox("Select an option:", lst1)
-        st.session_state.selected_option = selected_option
+        selected_option = st.selectbox("Select an option:", lst1, index=lst1.index(st.session_state.selected_option))
 
 
     if st.button("Get more information"):
