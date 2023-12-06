@@ -389,8 +389,8 @@ def page_home():
         if "selected_option" not in st.session_state:
             st.session_state.selected_option = lst1[0]
 
-        st.session_state.selected_option = st.selectbox("Select an option:", lst1, index=lst1.index(st.session_state.selected_option))
-
+        selected_option = st.selectbox("Select an option:", lst1, index=lst1.index(st.session_state.selected_option))
+        st.session_state.selected_option = selected_option
 
     if st.button("Get more information"):
         st.session_state.selected_page = "Article"
