@@ -11,7 +11,7 @@ from collections import Counter
 
 from google.oauth2 import service_account
 from google.cloud import bigquery
-
+st.set_page_config(page_title="News and Biases",layout="wide")
 # Create API client.
 credentials = service_account.Credentials.from_service_account_info(
     st.secrets["gcp_service_account"]
@@ -39,13 +39,14 @@ def cached_data():
     for index, row in enumerate(df.keywords):
         df.keywords[index] = ast.literal_eval(df.keywords[index])
 
-    df['pdate']= pd.to_datetime(df['pdate']).dt.date
+    print(df.info())
+    df['pdate']= pd.to_datetime(df['pdate'],format='ISO8601').dt.date
     return df
 
 #from PIL import Image
 #from wordcloud import WordCloud, STOPWORDS, ImageColorGenerator
 
-st.set_page_config(page_title="News and Biases",layout="wide")
+
 
 
 @st.cache_data
