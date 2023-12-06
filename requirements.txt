@@ -7,6 +7,7 @@ charset-normalizer==3.3.2
 click==8.1.7
 gitdb==4.0.11
 GitPython==3.1.40
+google-cloud-bigquery
 idna==3.6
 importlib-metadata==6.11.0
 Jinja2==3.1.2
@@ -32,6 +33,7 @@ rpds-py==0.13.2
 six==1.16.0
 smmap==5.0.1
 streamlit==1.29.0
+streamlit-card==0.0.61
 tenacity==8.2.3
 toml==0.10.2
 toolz==0.12.0
