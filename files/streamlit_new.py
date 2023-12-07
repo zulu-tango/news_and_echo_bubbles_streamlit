@@ -45,7 +45,8 @@ def add_bg_from_local(image_file):
 
 add_bg_from_local(os.path.join(os.getcwd(), 'images', 'background.jpg'))
 
-st.sidebar.image(os.path.join(os.getcwd(), 'images', 'News_logo.png'), use_column_width=True)
+st.sidebar.image("https://raw.githubusercontent.com/zulu-tango/news_and_echo_bubbles_streamlit/master/images/header_image_new.png", use_column_width=True)
+
 
 @st.cache_data
 def cached_data():
@@ -191,8 +192,7 @@ def card_selection(card_id, selected_card):
         return selected_card
 
 def page_home():
-
-    st.image(os.path.join(os.getcwd(), 'images', 'header_image_new.png'), width=900)
+    st.image("https://raw.githubusercontent.com/zulu-tango/news_and_echo_bubbles_streamlit/master/images/header_image_new.png", width=900)
 
 
     #add trending topics box header
@@ -417,38 +417,73 @@ def page_home():
 
         progress_bar.empty()
 
+        word_cloud_pipe(df_ll,df_l,df_c,df_r,df_rr)
 
-        selected_card = None
-        for card_id in range(1, 10):
-            selected_card = card_selection(card_id, selected_card)
 
-        # Display the selected card information
-        st.write(f"Selected Article: {selected_card}")
 
-        # if "selected_option" not in st.session_state:
-        #     st.session_state.selected_option = ""
-        # selected_option = st.selectbox("Select an option", (df_ll['title'][0]\
-        #                                                     ,df_ll['title'][1]\
-        #                                                     ,df_l['title'][0]\
-        #                                                     ,df_l['title'][1]\
-        #                                                     ,df_c['title'][0]\
-        #                                                     ,df_c['title'][1]\
-        #                                                     ,df_rr['title'][0]\
-        #                                                     ,df_rr['title'][1]\
-        #                                                     ,df_r['title'][0]\
-        #                                                     ,df_r['title'][1]))
+        if "selected_option" not in st.session_state:
+            st.session_state.selected_option = ""
+        selected_option = st.sidebar.selectbox("Select an option", (df_ll['title'][0]\
+                                                            ,df_ll['title'][1]\
+                                                            ,df_l['title'][0]\
+                                                            ,df_l['title'][1]\
+                                                            ,df_c['title'][0]\
+                                                            ,df_c['title'][1]\
+                                                            ,df_rr['title'][0]\
+                                                            ,df_rr['title'][1]\
+                                                            ,df_r['title'][0]\
+                                                            ,df_r['title'][1]))
 
-        # st.session_state.selected_option = selected_option
-        #output_placeholder = st.empty()
-        #st.write(selected_option)
+        st.session_state.selected_option = selected_option
+        output_placeholder = st.empty()
+        st.write(selected_option)
 
-    # Button to navigate to the second page
-    if st.button("Get more information on this article"):
-        # Redirect to the second page
-        st.session_state.selected_page = "Article"
-        st.experimental_set_query_params(page='Article')
-        st.experimental_rerun()
+    # # Button to navigate to the second page
+    # if st.button("Get more information on this article"):
+    #     # Redirect to the second page
+    #     st.session_state.selected_page = "Article"
+    #     st.experimental_set_query_params(page='Article')
+    #     st.experimental_rerun()
 
+
+def word_cloud_pipe(df1,df2,df3,df4,df5):
+    x = get_words(df1,df2,df3,df4,df5)
+    wordcloud(x)
+
+def type_list(df):
+    df["keyword_key_words"] = list(df["key"])
+    return df
+
+def get_words(df1,df2,df3,df4,df5):
+    # ic(df1)
+    # ic(df2)
+    big_df = pd.concat([df1,df2,df3,df4,df5],axis=0).reset_index()
+
+    big_df = type_list(big_df)
+
+    empty_list = []
+
+    for row in list(big_df["keyword_key_words"]):
+        for elem in row:
+            empty_list.append(elem)
+
+    x = ' '.join(empty_list)
+
+    return x
+
+def wordcloud(x):
+    ### import mask
+    mask = np.array(Image.open("https://raw.githubusercontent.com/zulu-tango/news_and_echo_bubbles_streamlit/master/images/news_mask.png")
+
+    ### instantiate word cloud
+    wordcloud = WordCloud(mask = mask, max_font_size=500, max_words=55, background_color="white", font_path = 'raw_data/fonts/tower_of_silence/towerofsilenceexpand.ttf',
+                      collocations=True,colormap = 'coolwarm', contour_width=2.0, contour_color='black').generate(x) #mode="RGBA", colormap = 'Reds', background_color="rgba(255, 255, 255, 0)"
+
+    fig, ax = plt.subplots(figsize=(8, 4))
+    ax.imshow(wordcloud, interpolation="bilinear")
+    #ax.set_title('Related Topics')
+    ax.axis('off')
+    st.pyplot(fig)
 
 
 def page_about():
