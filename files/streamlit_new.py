@@ -57,7 +57,7 @@ def cached_data():
 
     query = f"""
             SELECT *
-            FROM `{GCP_PROJECT}.preproc_scraped_news.scraped_news_preprocessed_2023_12_06`
+            FROM `{GCP_PROJECT}.preproc_scraped_news.scraped_news_preproc_prob__2023_12_07`
         """
 
     query_job = client.query(query)
@@ -473,17 +473,26 @@ def get_words(df1,df2,df3,df4,df5):
 
 def wordcloud(x):
     ### import mask
-    mask = np.array(Image.open("https://raw.githubusercontent.com/zulu-tango/news_and_echo_bubbles_streamlit/master/images/news_mask.png"))
+    #mask = np.array(Image.open("https://raw.githubusercontent.com/zulu-tango/news_and_echo_bubbles_streamlit/master/images/news_mask.png"))
 
     ### instantiate word cloud
-    wordcloud = WordCloud(mask = mask, max_font_size=500, max_words=55, background_color="white", font_path = 'raw_data/fonts/tower_of_silence/towerofsilenceexpand.ttf',
+    wordcloud = WordCloud(max_font_size=200, max_words=55, background_color="white", #font_path = 'raw_data/fonts/tower_of_silence/towerofsilenceexpand.ttf',
                       collocations=True,colormap = 'coolwarm', contour_width=2.0, contour_color='black').generate(x) #mode="RGBA", colormap = 'Reds', background_color="rgba(255, 255, 255, 0)"
 
-    fig, ax = plt.subplots(figsize=(8, 4))
+    fig, ax = plt.subplots()
     ax.imshow(wordcloud, interpolation="bilinear")
     #ax.set_title('Related Topics')
     ax.axis('off')
-    st.pyplot(fig)
+    fig.set_size_inches(4, 3)
+
+    #st.pyplot(fig)
+    st.markdown(
+    f'<div style="width: 400px; height: 300px; overflow: hidden;">'
+    f'<img src="data:image/png;base64,{st.pyplot(fig)}" style="width: 100%; height: 100%; object-fit: cover;">'
+    f'</div>',
+    unsafe_allow_html=True
+)
+
 
 
 def page_about():
@@ -501,34 +510,44 @@ def page_about():
     wc = WordCloud(background_color="white", max_words=1000)
     # generate word cloud
 
+    if data['pred_class'][0] == 'left':
+        color = '#004687'
+    elif data['pred_class'][0] == 'leans left':
+        color = '#6699CC'
+    elif data['pred_class'][0] == 'right':
+        color= '#AA0000'
+    elif data['pred_class'][0] == 'leans right':
+        color = '#E67150'
+    else:
+        color='white'
 
     with col_info:
         st.subheader("Info")
         st.write(f'Title: {data.title[0]}')
-        st.write(f'Author(s): {data.author[0]}')
-        st.write(f'Here is a summary of the article: {list(data.keywords[0])}')
+        #st.write(f'Author(s): {data.author[0]}')
+        st.write(f'Here is a summary of the article: <br>{data.sum_text[0]}', unsafe_allow_html=True)
 
     with col_bias:
         hasClicked = card(
                             title=f"BIAS",
-                            text=f"{data['pred_class'][0]}", #TODO and pred proba
+                            text=f"{data['pred_class'][0]} with a confidence of {round(data['pred_probas'][0],2)}",
                             styles={
                                     "card": {
-                                        "width": "400px",
+                                        "width": "300px",
                                         "height": "100px",
                                         "border-radius": "10px",
-                                        'background-color': '#E67150',
+                                        'background-color': f'{color}',
                                         'margin': '0 auto',
                                         "box-shadow": "0 0 10px rgba(0,0,0,0.5)",
                                     },
                                     "text": {
-                                        'font-size':"12px",
+                                        'font-size':"16px",
                                         "font-family": "serif"
                                     }
                                 })
         wc.generate_from_frequencies(data.keywords[0])
         # show
-        fig, ax = plt.subplots(figsize=(4, 2))
+        fig, ax = plt.subplots(figsize=(2, 2))
         ax.imshow(wc, interpolation="bilinear")
         #ax.set_title('Related Topics')
         ax.axis('off')
@@ -550,11 +569,109 @@ def search(query,date_1, date_2):
 
     return df_ll[:2],df_l[:2],df_c[:2],df_r[:2],df_rr[:2]
 
+def page_profile():
+
+    # set CSS style to round all images expect the one with the "exclude-me" tag (i.e. linkedin icons)
+    st.markdown("""
+    <style>
+        img:not(#exclude-me) {border-radius: 50%}
+    </style>
+
+    """, unsafe_allow_html=True)
+
+    ############################### Barnaby info #######################################
+    # create two cols, one for profile photo and the other with the social networks links
+    col1, mid, col2 = st.columns([1,2,20],gap="medium")
+
+    with col1:
+        st.image('https://raw.githubusercontent.com/zulu-tango/news_and_echo_bubbles_streamlit/master/images/Barney.png', width=105) #path of the picture
+
+    with col2:
+        st.markdown("**Barnaby Kempster**")
+        st.write("""
+    <img src="https://github.githubassets.com/favicons/favicon.svg" width="20" border-radius="50"> **Github profile**: https://github.com/Barnaby323
+
+    <img id='exclude-me' src="https://content.linkedin.com/content/dam/me/business/en-us/amp/brand-site/v2/bg/LI-Bug.svg.original.svg" width="20"> **LinkedIn**: https://www.linkedin.com/in/barnaby-kempster/
+                """, unsafe_allow_html=True)
+    # add large blank space
+    st.write("#")
+    ############################### Connor Gower info #######################################
+    # create two cols, one for profile photo and the other with the social networks links
+    col1, mid, col2 = st.columns([1,2,20],gap="medium")
+    with col1:
+        st.image('https://raw.githubusercontent.com/zulu-tango/news_and_echo_bubbles_streamlit/master/images/Connor.png', width=105)#path of the picture
+
+    with col2:
+        st.markdown("**Connor Gower**")
+        st.markdown("""
+    <img class="image backArrow" src="https://github.githubassets.com/favicons/favicon.svg" width="20"> **Github profile**: https://github.com/connorgower
+
+    <img id='exclude-me' src="https://content.linkedin.com/content/dam/me/business/en-us/amp/brand-site/v2/bg/LI-Bug.svg.original.svg" width="20"> **LinkedIn**: https://www.linkedin.com/in/connor-gower/
+
+
+                """, unsafe_allow_html=True)
+
+    # add large blank space
+    st.write("#")
+    ############################### Manuel Puente info #######################################
+    # create two cols, one for profile photo and the other with the social networks links
+
+    col1, mid, col2 = st.columns([1,2,20],gap="medium")
+
+    with col1:
+        st.image('https://raw.githubusercontent.com/zulu-tango/news_and_echo_bubbles_streamlit/master/images/Manuel.png', width=105)#path of the picture
+
+    with col2:
+        st.markdown("**Manuel Puente**")
+        st.write("""
+    <img src="https://github.githubassets.com/favicons/favicon.svg" width="20"> **Github profile**: https://github.com/Manu2023ds
+
+    <img id='exclude-me' src="https://content.linkedin.com/content/dam/me/business/en-us/amp/brand-site/v2/bg/LI-Bug.svg.original.svg" width="20"> **LinkedIn**: https://www.linkedin.com/in/manuel-p-29223629/
+
+                """, unsafe_allow_html=True)
+
+    # add large blank space
+    st.write("#")
+    ############################### Zoe Tustain info #######################################
+    # create two cols, one for profile photo and the other with the social networks links
+
+    col1, mid, col2 = st.columns([1,2,20],gap="medium")
+
+    with col1:
+        st.image('https://raw.githubusercontent.com/zulu-tango/news_and_echo_bubbles_streamlit/master/images/Zoe.png', width=105)#path of the picture
+
+    with col2:
+        st.markdown("**Zoe Tustain**")
+        st.write("""
+    <img src="https://github.githubassets.com/favicons/favicon.svg" width="20"> **Github profile**: https://github.com/zulu-tango
+
+    <img id='exclude-me' src="https://content.linkedin.com/content/dam/me/business/en-us/amp/brand-site/v2/bg/LI-Bug.svg.original.svg" width="20"> **LinkedIn**: https://www.linkedin.com/in/zoetustain/
+
+                """, unsafe_allow_html=True)
+
+    # add large blank space
+    st.write("#")
+    ############################### COMLAN Renato info #######################################
+    # create two cols, one for profile photo and the other with the social networks links
+    col1, mid, col2 = st.columns([1,2,20],gap="medium")
+
+    with col1:
+        st.image('https://raw.githubusercontent.com/zulu-tango/news_and_echo_bubbles_streamlit/master/images/Renato.png', width=105)#path of the picture
+
+    with col2:
+        st.markdown("**Renato COMLAN**")
+        st.write("""
+    <img src="https://github.githubassets.com/favicons/favicon.svg" width="20"> **Github profile**: https://github.com/cmlnrnt
+
+    <img id='exclude-me' src="https://content.linkedin.com/content/dam/me/business/en-us/amp/brand-site/v2/bg/LI-Bug.svg.original.svg" width="20"> **LinkedIn**: https://www.linkedin.com/in/renato-comlan/
+
+                """, unsafe_allow_html=True)
+
 def main():
     if "selected_page" not in st.session_state:
-        st.session_state.selected_page = "Search"
+        st.session_state.selected_page = "About"
 
-    pages = ["Search", "Article"]
+    pages = ["About","Search", "Article"]
 
     st.sidebar.title("Contents")
     selected_page = st.sidebar.radio("Select a page", pages, index=pages.index(st.session_state.selected_page))
@@ -562,7 +679,9 @@ def main():
 
 
     # Display content based on the selected page
-    if st.session_state.selected_page == "Search":
+    if st.session_state.selected_page == "About":
+        page_profile()
+    elif st.session_state.selected_page == "Search":
         page_home()
     elif st.session_state.selected_page == "Article":
         page_about()
