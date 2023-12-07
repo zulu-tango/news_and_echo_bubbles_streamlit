@@ -265,7 +265,7 @@ def page_home():
     #         unsafe_allow_html=True)
 
     # Define the text input box
-    topic = st.text_input("SEARCH WORD: ",'')
+    topic = st.text_input("SEARCH WORD: ",'biden')
     # st.markdown('''
     #             <style>
     #             textarea {
@@ -435,16 +435,6 @@ def page_home():
             if "selected_option" not in st.session_state:
                 st.session_state.selected_option = ""
             selected_option = st.selectbox("Select an option", lst1)
-            # (df_ll['title'][0]\
-            #                                                     ,df_ll['title'][1]\
-            #                                                     ,df_l['title'][0]\
-            #                                                     ,df_l['title'][1]\
-            #                                                     ,df_c['title'][0]\
-            #                                                     ,df_c['title'][1]\
-            #                                                     ,df_rr['title'][0]\
-            #                                                     ,df_rr['title'][1]\
-            #                                                     ,df_r['title'][0]\
-            #                                                     ,df_r['title'][1]))
             st.session_state.selected_option = selected_option
 
         with col_1_2:
@@ -485,7 +475,13 @@ def get_words(df1,df2,df3,df4,df5):
 
 def wordcloud(x):
     ### import mask
-    #mask = np.array(Image.open("https://raw.githubusercontent.com/zulu-tango/news_and_echo_bubbles_streamlit/master/images/news_mask.png"))
+    # mask = np.array(Image.open("https://raw.githubusercontent.com/zulu-tango/news_and_echo_bubbles_streamlit/master/images/news_mask.png"))
+
+    #mask = np.array(Image.open(os.path.abspath('raw_data/news_mask.png')))
+
+    ### instantiate word cloud
+    # wordcloud = WordCloud(mask = mask, max_font_size=500, max_words=55, background_color="white", font_path = 'raw_data/fonts/tower_of_silence/towerofsilenceexpand.ttf',
+    #                   collocations=True,colormap = 'coolwarm', contour_width=2.0, contour_color='black').generate(x) #mode="RGBA", colormap = 'Reds', background_color="rgba(255, 255, 255, 0)"
 
     ### instantiate word cloud
     wordcloud = WordCloud(max_font_size=200, max_words=55, background_color="white", #font_path = 'raw_data/fonts/tower_of_silence/towerofsilenceexpand.ttf',
@@ -496,7 +492,6 @@ def wordcloud(x):
     #ax.set_title('Related Topics')
     ax.axis('off')
     st.pyplot(fig,clear_figure=True,use_container_width=True)
-
 
 
 def page_about():
@@ -597,7 +592,6 @@ def page_profile():
     <img id='exclude-me' src="https://content.linkedin.com/content/dam/me/business/en-us/amp/brand-site/v2/bg/LI-Bug.svg.original.svg" width="20"> **LinkedIn**: https://www.linkedin.com/in/barnaby-kempster/
                 """, unsafe_allow_html=True)
     # add large blank space
-    st.write("#")
     ############################### Connor Gower info #######################################
     # create two cols, one for profile photo and the other with the social networks links
     col1, mid, col2 = st.columns([1,2,20],gap="medium")
@@ -615,7 +609,6 @@ def page_profile():
                 """, unsafe_allow_html=True)
 
     # add large blank space
-    st.write("#")
     ############################### Manuel Puente info #######################################
     # create two cols, one for profile photo and the other with the social networks links
 
@@ -634,7 +627,6 @@ def page_profile():
                 """, unsafe_allow_html=True)
 
     # add large blank space
-    st.write("#")
     ############################### Zoe Tustain info #######################################
     # create two cols, one for profile photo and the other with the social networks links
 
@@ -653,7 +645,6 @@ def page_profile():
                 """, unsafe_allow_html=True)
 
     # add large blank space
-    st.write("#")
     ############################### COMLAN Renato info #######################################
     # create two cols, one for profile photo and the other with the social networks links
     col1, mid, col2 = st.columns([1,2,20],gap="medium")
