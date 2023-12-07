@@ -45,7 +45,7 @@ def add_bg_from_local(image_file):
 
 add_bg_from_local(os.path.join(os.getcwd(), 'images', 'background.jpg'))
 
-st.sidebar.image("https://raw.githubusercontent.com/zulu-tango/news_and_echo_bubbles_streamlit/master/images/header_image_new.png", use_column_width=True)
+st.sidebar.image("https://raw.githubusercontent.com/zulu-tango/news_and_echo_bubbles_streamlit/master/images/News_logo.png", use_column_width=True)
 
 
 @st.cache_data
