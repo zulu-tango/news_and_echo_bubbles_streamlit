@@ -1,0 +1,32 @@
+div.st-emotion-cache-1v0mbdj.e115fcil1{
+  display: block;
+  margin: auto;
+}
+
+.p{
+  font-size: large;
+}
+
+
+button[kind="primary"] {
+  display: inline-block;
+  padding: 20px 50px;
+  font-size: 36px;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  outline: none;
+  color: black;
+  background-color: #FFFFFF;
+  border: none;
+  border-radius: 15px;
+  box-shadow: 0 9px #999;
+}
+
+button[kind="primary"]:hover {background-color: #05FEFB}
+
+button[kind="primary"]:active {
+  background-color: #05FEFB;
+  box-shadow: 0 5px #666;
+  transform: translateY(4px);
+}

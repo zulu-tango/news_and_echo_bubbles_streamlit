@@ -3,11 +3,13 @@ import pandas as pd
 import time
 import datetime
 import ast
+import os
 from datetime import date
 import matplotlib.pyplot as plt
 import numpy as np
 from streamlit_card import card
 from collections import Counter
+import base64
 
 from PIL import Image
 from wordcloud import WordCloud, STOPWORDS, ImageColorGenerator
@@ -22,6 +24,28 @@ credentials = service_account.Credentials.from_service_account_info(
 client = bigquery.Client(credentials=credentials)
 
 GCP_PROJECT = 'news-and-echo-bubbles'
+
+with open('files/style.css') as f:
+    st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
+
+def add_bg_from_local(image_file):
+    with open(image_file, "rb") as image_file:
+        encoded_string = base64.b64encode(image_file.read())
+    st.markdown(
+    f"""
+    <style>
+    .stApp {{
+        background-image: url(data:image/{"png"};base64,{encoded_string.decode()});
+        background-size: cover
+    }}
+    </style>
+    """,
+    unsafe_allow_html=True
+    )
+
+add_bg_from_local(os.path.join(os.getcwd(), 'images', 'background.jpg'))
+
+st.sidebar.image("https://raw.githubusercontent.com/zulu-tango/news_and_echo_bubbles_streamlit/master/images/header_image_new.png", use_column_width=True)
 
 
 @st.cache_data
@@ -71,8 +95,8 @@ def trending_topics():
 
     trending.sort_values(by='count',ascending=False,inplace=True)
     trending.reset_index(drop=True,inplace=True)
-    topic_1 = trending.word[0]
-    topic_2 = trending.word[1]
+    topic_1 = 'trump'
+    topic_2 = 'biden'
     topic_3 = trending.word[2]
     topic_4 = trending.word[4]
     topic_5 = trending.word[5]
@@ -153,80 +177,101 @@ def biases(date_1,date_2):
 
     return df_ll, df_l, df_c, df_r, df_rr
 
+def card_selection(card_id, selected_card):
+    # Check if the current card is selected
+    is_selected = card_id == selected_card
+
+    # Define the card content
+    card_content = f"Card {card_id} {'(Selected)' if is_selected else ''}"
+
+    # Display the card as a button
+    if st.button(card_content):
+        # Update the selected card when the button is clicked
+        return card_id
+    else:
+        return selected_card
+
 def page_home():
-    container = st.container()
-    logo_col, header_col = container.columns(2)
-
-    global selected_option
+    st.image("https://raw.githubusercontent.com/zulu-tango/news_and_echo_bubbles_streamlit/master/images/header_image_new.png", width=900)
 
 
-    # Add a logo
-    with logo_col:
-        logo = st.image("https://raw.githubusercontent.com/zulu-tango/news_and_echo_bubbles_streamlit/master/images/News_logo.png", width=250)
+    #add trending topics box header
+    st.markdown(
+        """
+        <div style="text-align: center; align-items: center; justify-content: center; display: flex; height: 60px; border:1px solid #d3d3d3; padding: 1px; border-radius: 20px; background-color: #f5f5f5;">
+            <h1 style="color: #333;font-size: 24px;">TODAY'S TRENDING TOPICS</h1>
+        </div>
+        """,
+        unsafe_allow_html=True)
+    #add topics underneath the header
+    st.markdown("<br>", unsafe_allow_html=True)
 
-    # Boxed header
-    with header_col:
-       #add trending topics box header
+    topic_1, topic_2, topic_3, topic_4, topic_5 = trending()
+    tt_1, tt_2, tt_3, tt_4, tt_5 = st.columns(5)
+    with tt_1:
         st.markdown(
-            """
-            <div style="text-align: center; border:1px solid #d3d3d3; padding: 10px; border-radius: 1px; background-color: #f5f5f5;">
-                <h1 style="color: #333;font-size: 20px;">TODAY'S TRENDING TOPICS</h1>
+            f"""
+            <div style="text-align: center; align-items: center; justify-content: center; display: flex; height: 40px; border:1px solid #d3d3d3; padding: 1px; border-radius: 20px; background-color: #f5f5f5;">
+                <h1 style="color: #333;font-size: 16px;margin:0;">{topic_1.capitalize()}</h1>
             </div>
             """,
             unsafe_allow_html=True)
-        #add topics underneath the header
-        st.markdown("<br>", unsafe_allow_html=True)
 
-        topic_1, topic_2, topic_3, topic_4, topic_5 = trending()
-        tt_1, tt_2, tt_3, tt_4, tt_5 = st.columns(5)
-        with tt_1:
+    with tt_2:
+        st.markdown(
+            f"""
+            <div style="text-align: center; align-items: center; justify-content: center; display: flex; height: 40px; border:1px solid #d3d3d3; padding: 1px; border-radius: 20px; background-color: #f5f5f5;">
+                <h1 style="color: #333;font-size: 16px;margin:0;">{topic_2.capitalize()}</h1>
+            </div>
+            """,
+            unsafe_allow_html=True)
+
+    with tt_3:
+        st.markdown(
+            f"""
+            <div style="text-align: center; align-items: center; justify-content: center; display: flex; height: 40px; border:1px solid #d3d3d3; padding: 1px; border-radius: 20px; background-color: #f5f5f5;">
+                <h1 style="color: #333;font-size: 16px;margin:0;">{topic_3.capitalize()}</h1>
+            </div>
+            """,
+            unsafe_allow_html=True)
+
+    with tt_4:
+        st.markdown(
+            f"""
+            <div style="text-align: center; align-items: center; justify-content: center; display: flex; height: 40px; border:1px solid #d3d3d3; padding: 1px; border-radius: 20px; background-color: #f5f5f5;">
+                <h1 style="color: #333;font-size: 16px;margin:0;">{topic_4.capitalize()}</h1>
+            </div>
+            """,
+            unsafe_allow_html=True)
+
+    with tt_5:
             st.markdown(
                 f"""
-                <div style="text-align: center; border:1px solid #d3d3d3; padding: 1px; border-radius: 1px; background-color: #f5f5f5;">
-                    <h1 style="color: #333;font-size: 12px;margin:0;">{topic_1.capitalize()}</h1>
+                <div style="text-align: center; align-items: center; justify-content: center; display: flex; height: 40px; border:1px solid #d3d3d3; padding: 1px; border-radius: 20px; background-color: #f5f5f5;">
+                    <h1 style="color: #333;font-size: 16px;margin:0;">{topic_5.capitalize()}</h1>
                 </div>
                 """,
                 unsafe_allow_html=True)
 
-        with tt_2:
-            st.markdown(
-                f"""
-                <div style="text-align: center; border:1px solid #d3d3d3; padding: 1px; border-radius: 1px; background-color: #f5f5f5;">
-                    <h1 style="color: #333;font-size: 12px;margin:0;">{topic_2.capitalize()}</h1>
-                </div>
-                """,
-                unsafe_allow_html=True)
+    for i in range(1):
+        st.text("")
 
-        with tt_3:
-            st.markdown(
-                f"""
-                <div style="text-align: center; border:1px solid #d3d3d3; padding: 1px; border-radius: 1px; background-color: #f5f5f5;">
-                    <h1 style="color: #333;font-size: 12px;margin:0;">{topic_3.capitalize()}</h1>
-                </div>
-                """,
-                unsafe_allow_html=True)
+    # st.markdown(
+    #         f"""
+    #         <div style="text-align: left;">
+    #             <h1 style="color: #FFFFFF;font-size: 20px;margin:0;">ENTER A SEARCH TOPIC:</h1>
+    #         </div>
+    #         """,
+    #         unsafe_allow_html=True)
 
-        with tt_4:
-            st.markdown(
-                f"""
-                <div style="text-align: center; border:1px solid #d3d3d3; padding: 1px; border-radius: 1px; background-color: #f5f5f5;">
-                    <h1 style="color: #333;font-size: 12px;margin:0;">{topic_4.capitalize()}</h1>
-                </div>
-                """,
-                unsafe_allow_html=True)
+    # Define the text input box
+    topic = st.text_input("SEARCH WORD: ",'')
+    # st.markdown('''
+    #             <style>
+    #             textarea {
+    #                 font-size: 2rem !important;
+    #                 } </style>''', unsafe_allow_html=True)
 
-        with tt_5:
-            st.markdown(
-                f"""
-                <div style="text-align: center; border:1px solid #d3d3d3; padding: 1px; border-radius: 1px; background-color: #f5f5f5;">
-                    <h1 style="color: #333;font-size: 12px;margin:0;">{topic_5.capitalize()}</h1>
-                </div>
-                """,
-                unsafe_allow_html=True)
-
-
-    # add the search bar
-    topic = st.text_input("ENTER A SEARCH TOPIC: ", '')
 
     #add the date range
     start_date = datetime.date(2023,11,1)
@@ -238,8 +283,8 @@ def page_home():
     date_2 = date[1]
 
     # click the search button for results
-    if st.button("Search"):
-        lst1 = []
+    if st.button("Search",type='primary'):
+
         #add a design feature for a progress bar
         progress_bar = st.progress(0, text='searching articles... please wait')
 
@@ -266,7 +311,7 @@ def page_home():
                         #url=f"{df_ll['link'].iloc[i]}",
                         styles={
                                     "card": {
-                                        "width": "300px",
+                                        "width": "420px",
                                         "align": "left",
                                         "height": "100px",
                                         "border-radius": "10px",
@@ -275,8 +320,8 @@ def page_home():
                                         "box-shadow": "0 0 10px rgba(0,0,0,0.5)",
                                     },
                                     "text": {
-                                        'font-size':"12px",
-                                        "font-family": "serif"
+                                        'font-size':"14px",
+                                        "font-family": "Source Sans Pro"
                                     }
                                 }
                                 )
@@ -289,7 +334,7 @@ def page_home():
                         # url=f"{df_l['link'].iloc[i]}",
                         styles={
                                     "card": {
-                                        "width": "300px",
+                                        "width": "420px",
                                         "height": "100px",
                                         "border-radius": "10px",
                                         'background-color': '#6699CC',
@@ -297,8 +342,8 @@ def page_home():
                                         "box-shadow": "0 0 10px rgba(0,0,0,0.5)",
                                     },
                                     "text": {
-                                        'font-size':"12px",
-                                        "font-family": "serif"
+                                        'font-size':"14px",
+                                        "font-family": "Source Sans Pro"
                                     }
                                 }
                                                 )
@@ -311,7 +356,7 @@ def page_home():
                             #url=f"{df_c['link'].iloc[i]}",
                             styles={
                                     "card": {
-                                        "width": "300px",
+                                        "width": "420px",
                                         "height": "100px",
                                         "border-radius": "10px",
                                         'background-color': 'white',
@@ -319,8 +364,8 @@ def page_home():
                                         "box-shadow": "0 0 10px rgba(0,0,0,0.5)",
                                     },
                                     "text": {
-                                        'font-size':"12px",
-                                        "font-family": "serif"
+                                        'font-size':"14px",
+                                        "font-family": "Source Sans Pro"
                                     }
                                 }
                                                     )
@@ -335,16 +380,16 @@ def page_home():
                             #url=f"{df_rr['link'].iloc[i]}",
                             styles={
                                     "card": {
-                                        "width": "400px",
+                                        "width": "420px",
                                         "height": "100px",
                                         "border-radius": "10px",
                                         'background-color': '#AA0000',
-                                        'margin': '0 auto',
+                                        'margin': 'auto',
                                         "box-shadow": "0 0 10px rgba(0,0,0,0.5)",
                                     },
                                     "text": {
-                                        'font-size':"12px",
-                                        "font-family": "serif"
+                                        'font-size':"14px",
+                                        "font-family": "Source Sans Pro"
                                     }
                                 })
 
@@ -357,7 +402,7 @@ def page_home():
                             # url=f"{df_r['link'].iloc[i]}",
                             styles={
                                     "card": {
-                                        "width": "400px",
+                                        "width": "420px",
                                         "height": "100px",
                                         "border-radius": "10px",
                                         'background-color': '#E67150',
@@ -365,39 +410,80 @@ def page_home():
                                         "box-shadow": "0 0 10px rgba(0,0,0,0.5)",
                                     },
                                     "text": {
-                                        'font-size':"12px",
-                                        "font-family": "serif"
+                                        'font-size':"14px",
+                                        "font-family": "sans serif"
                                     }
                                 })
 
         progress_bar.empty()
 
-        lst1 = [df_ll['title'][i] for i in range(len(df_ll))]
-        lst2 = [df_l['title'][i] for i in range(len(df_l))]
-        lst3 = [df_c['title'][i] for i in range(len(df_c))]
-        lst4 = [df_r['title'][i] for i in range(len(df_r))]
-        lst5 = [df_rr['title'][i] for i in range(len(df_rr))]
+        word_cloud_pipe(df_ll,df_l,df_c,df_r,df_rr)
 
-        lst1.extend(lst2)
-        lst1.extend(lst3)
-        lst1.extend(lst4)
-        lst1.extend(lst5)
 
-        #options = ['option 1', 'option 2']
 
-        # Use st.selectbox to create a dropdown
-        selected_option = st.selectbox("Select an option", lst1)
+        if "selected_option" not in st.session_state:
+            st.session_state.selected_option = ""
+        selected_option = st.sidebar.selectbox("Select an option", (df_ll['title'][0]\
+                                                            ,df_ll['title'][1]\
+                                                            ,df_l['title'][0]\
+                                                            ,df_l['title'][1]\
+                                                            ,df_c['title'][0]\
+                                                            ,df_c['title'][1]\
+                                                            ,df_rr['title'][0]\
+                                                            ,df_rr['title'][1]\
+                                                            ,df_r['title'][0]\
+                                                            ,df_r['title'][1]))
+
         st.session_state.selected_option = selected_option
-        #output_placeholder = st.empty()
-        #st.write(selected_option)
+        output_placeholder = st.empty()
+        st.write(selected_option)
 
-    # Button to navigate to the second page
-    if st.button("Get more information on this article"):
-        # Redirect to the second page
-        st.session_state.selected_page = "Article"
-        st.experimental_set_query_params(page='Article')
-        st.experimental_rerun()
+    # # Button to navigate to the second page
+    # if st.button("Get more information on this article"):
+    #     # Redirect to the second page
+    #     st.session_state.selected_page = "Article"
+    #     st.experimental_set_query_params(page='Article')
+    #     st.experimental_rerun()
 
+
+def word_cloud_pipe(df1,df2,df3,df4,df5):
+    x = get_words(df1,df2,df3,df4,df5)
+    wordcloud(x)
+
+def type_list(df):
+    df["keyword_key_words"] = list(df["key"])
+    return df
+
+def get_words(df1,df2,df3,df4,df5):
+    # ic(df1)
+    # ic(df2)
+    big_df = pd.concat([df1,df2,df3,df4,df5],axis=0).reset_index()
+
+    big_df = type_list(big_df)
+
+    empty_list = []
+
+    for row in list(big_df["keyword_key_words"]):
+        for elem in row:
+            empty_list.append(elem)
+
+    x = ' '.join(empty_list)
+
+    return x
+
+def wordcloud(x):
+    ### import mask
+    mask = np.array(Image.open("https://raw.githubusercontent.com/zulu-tango/news_and_echo_bubbles_streamlit/master/images/news_mask.png"))
+
+    ### instantiate word cloud
+    wordcloud = WordCloud(mask = mask, max_font_size=500, max_words=55, background_color="white", font_path = 'raw_data/fonts/tower_of_silence/towerofsilenceexpand.ttf',
+                      collocations=True,colormap = 'coolwarm', contour_width=2.0, contour_color='black').generate(x) #mode="RGBA", colormap = 'Reds', background_color="rgba(255, 255, 255, 0)"
+
+    fig, ax = plt.subplots(figsize=(8, 4))
+    ax.imshow(wordcloud, interpolation="bilinear")
+    #ax.set_title('Related Topics')
+    ax.axis('off')
+    st.pyplot(fig)
 
 
 def page_about():
