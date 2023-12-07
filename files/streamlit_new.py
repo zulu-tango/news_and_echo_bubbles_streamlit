@@ -43,7 +43,7 @@ def add_bg_from_local(image_file):
     unsafe_allow_html=True
     )
 
-add_bg_from_local(os.path.join(os.getcwd(), 'images', 'background.jpg'))
+#add_bg_from_local(os.path.join(os.getcwd(), 'images', 'background.jpg'))
 
 st.sidebar.image("https://raw.githubusercontent.com/zulu-tango/news_and_echo_bubbles_streamlit/master/images/News_logo.png", use_column_width=True)
 
@@ -521,9 +521,11 @@ def page_about():
 
     with col_info:
         #st.subheader("Info")
-        st.write(f'Title: {data.title[0]}')
-        #st.write(f'Author(s): {data.author[0]}')
-        st.write(f'Here is a summary of the article: <br>{data.sum_text[0]}', unsafe_allow_html=True)
+        #st.write(f'Title: {data.title[0]}')
+        st.markdown(f"<p style='font-size: 24px;'>Title: {data.title[0]}</p>", unsafe_allow_html=True)
+
+        st.write(f'News Source: {data.urls[0]}')
+        st.write(f"<p style='font-size: 20px;'>Here is a summary of the article: <br>{data.sum_text[0]}</p>", unsafe_allow_html=True)
 
     with col_bias:
         hasClicked = card(
@@ -552,8 +554,8 @@ def page_about():
         st.pyplot(fig,clear_figure=True,use_container_width=False)
 
 
-    if st.button('Read full article'):
-        st.write(f'{data.text[0]}')
+    #if st.button('Read full article'):
+    st.write(f"<p style='font-size: 16px;'>You can read the full article below : <br><br>{data.text[0]}</p>", unsafe_allow_html=True)
 
 
 def trending():
