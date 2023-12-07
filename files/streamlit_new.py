@@ -9,6 +9,9 @@ import numpy as np
 from streamlit_card import card
 from collections import Counter
 
+from PIL import Image
+from wordcloud import WordCloud, STOPWORDS, ImageColorGenerator
+
 from google.oauth2 import service_account
 from google.cloud import bigquery
 st.set_page_config(page_title="News and Biases",layout="wide")
@@ -19,6 +22,7 @@ credentials = service_account.Credentials.from_service_account_info(
 client = bigquery.Client(credentials=credentials)
 
 GCP_PROJECT = 'news-and-echo-bubbles'
+
 
 @st.cache_data
 def cached_data():
@@ -42,12 +46,6 @@ def cached_data():
     print(df.info())
     df['pdate']= pd.to_datetime(df['pdate'],format='ISO8601').dt.date
     return df
-
-#from PIL import Image
-#from wordcloud import WordCloud, STOPWORDS, ImageColorGenerator
-
-
-
 
 @st.cache_data
 def trending_topics():
@@ -159,6 +157,9 @@ def page_home():
     container = st.container()
     logo_col, header_col = container.columns(2)
 
+    global selected_option
+
+
     # Add a logo
     with logo_col:
         logo = st.image("https://raw.githubusercontent.com/zulu-tango/news_and_echo_bubbles_streamlit/master/images/News_logo.png", width=250)
@@ -238,6 +239,7 @@ def page_home():
 
     # click the search button for results
     if st.button("Search"):
+        lst1 = []
         #add a design feature for a progress bar
         progress_bar = st.progress(0, text='searching articles... please wait')
 
@@ -373,40 +375,83 @@ def page_home():
         lst1 = [df_ll['title'][i] for i in range(len(df_ll))]
         lst2 = [df_l['title'][i] for i in range(len(df_l))]
         lst3 = [df_c['title'][i] for i in range(len(df_c))]
-        lst4 = [df_r['title'][i] for i in range(len(df_rr))]
-        lst5 = [df_rr['title'][i] for i in range(len(df_r))]
+        lst4 = [df_r['title'][i] for i in range(len(df_r))]
+        lst5 = [df_rr['title'][i] for i in range(len(df_rr))]
 
         lst1.extend(lst2)
         lst1.extend(lst3)
         lst1.extend(lst4)
         lst1.extend(lst5)
 
-        # if "selected_option" not in st.session_state:
-        #     st.session_state.selected_option = lst1[0]
-        # st.session_state.selected_option = None
-        ##st.session_state.selected_option = st.selectbox("Select an option:", lst1)
-        # print(selected_option)
-        # st.session_state.selected_option = selected_option
-        if "selected_option" not in st.session_state:
-            st.session_state.selected_option = lst1[0]
+        #options = ['option 1', 'option 2']
 
-        selected_option = st.selectbox("Select an option:", lst1, index=lst1.index(st.session_state.selected_option))
+        # Use st.selectbox to create a dropdown
+        selected_option = st.selectbox("Select an option", lst1)
         st.session_state.selected_option = selected_option
+        #output_placeholder = st.empty()
+        #st.write(selected_option)
 
-    if st.button("Get more information"):
+    # Button to navigate to the second page
+    if st.button("Get more information on this article"):
+        # Redirect to the second page
         st.session_state.selected_page = "Article"
         st.experimental_set_query_params(page='Article')
         st.experimental_rerun()
 
+
+
 def page_about():
     st.title("Article Information")
-    st.write("Selected option from the dropdown:", st.session_state.selected_option)
+    #st.write("Selected option from the dropdown:", st.session_state.selected_option)
+    #st.write(st.session_state.selected_option)
 
     data = cached_data()
     mask = data['title']==st.session_state.selected_option
     data = data[mask]
     data.reset_index(drop=True,inplace=True)
-    st.write(f"""{data.text[0]}""")
+
+    col_info, col_bias = st.columns(2)
+
+    wc = WordCloud(background_color="white", max_words=1000)
+    # generate word cloud
+
+
+    with col_info:
+        st.subheader("Info")
+        st.write(f'Title: {data.title[0]}')
+        st.write(f'Author(s): {data.author[0]}')
+        st.write(f'Here is a summary of the article: {list(data.keywords[0])}')
+
+    with col_bias:
+        hasClicked = card(
+                            title=f"BIAS",
+                            text=f"{data['pred_class'][0]}", #TODO and pred proba
+                            styles={
+                                    "card": {
+                                        "width": "400px",
+                                        "height": "100px",
+                                        "border-radius": "10px",
+                                        'background-color': '#E67150',
+                                        'margin': '0 auto',
+                                        "box-shadow": "0 0 10px rgba(0,0,0,0.5)",
+                                    },
+                                    "text": {
+                                        'font-size':"12px",
+                                        "font-family": "serif"
+                                    }
+                                })
+        wc.generate_from_frequencies(data.keywords[0])
+        # show
+        fig, ax = plt.subplots(figsize=(4, 2))
+        ax.imshow(wc, interpolation="bilinear")
+        #ax.set_title('Related Topics')
+        ax.axis('off')
+        st.pyplot(fig)
+
+
+    if st.button('Read full article'):
+        st.write(f'{data.text[0]}')
+
 
 def trending():
     topic_1, topic_2, topic_3, topic_4, topic_5 = trending_topics()
