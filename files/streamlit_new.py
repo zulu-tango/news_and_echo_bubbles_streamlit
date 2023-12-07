@@ -418,33 +418,44 @@ def page_home():
 
         progress_bar.empty()
 
+        lst1 = [df_ll['title'][i] for i in range(len(df_ll['title']))]
+        lst2 = [df_l['title'][i] for i in range(len(df_l['title']))]
+        lst3 = [df_c['title'][i] for i in range(len(df_c['title']))]
+        lst4 = [df_rr['title'][i] for i in range(len(df_rr['title']))]
+        lst5 = [df_r['title'][i] for i in range(len(df_r['title']))]
+
+        lst1.extend(lst2)
+        lst1.extend(lst3)
+        lst1.extend(lst4)
+        lst1.extend(lst5)
 
         col_1_1, col_1_2 = st.columns(2)
         with col_1_1:
             if "selected_option" not in st.session_state:
                 st.session_state.selected_option = ""
-            selected_option = st.selectbox("Select an option", (df_ll['title'][0]\
-                                                                ,df_ll['title'][1]\
-                                                                ,df_l['title'][0]\
-                                                                ,df_l['title'][1]\
-                                                                ,df_c['title'][0]\
-                                                                ,df_c['title'][1]\
-                                                                ,df_rr['title'][0]\
-                                                                ,df_rr['title'][1]\
-                                                                ,df_r['title'][0]\
-                                                                ,df_r['title'][1]))
+            selected_option = st.selectbox("Select an option", lst1)
+            # (df_ll['title'][0]\
+            #                                                     ,df_ll['title'][1]\
+            #                                                     ,df_l['title'][0]\
+            #                                                     ,df_l['title'][1]\
+            #                                                     ,df_c['title'][0]\
+            #                                                     ,df_c['title'][1]\
+            #                                                     ,df_rr['title'][0]\
+            #                                                     ,df_rr['title'][1]\
+            #                                                     ,df_r['title'][0]\
+            #                                                     ,df_r['title'][1]))
 
             st.session_state.selected_option = selected_option
 
         with col_1_2:
             word_cloud_pipe(df_ll,df_l,df_c,df_r,df_rr)
 
-    # # Button to navigate to the second page
-    # if st.button("Get more information on this article"):
-    #     # Redirect to the second page
-    #     st.session_state.selected_page = "Article"
-    #     st.experimental_set_query_params(page='Article')
-    #     st.experimental_rerun()
+    # Button to navigate to the second page
+    if st.button("Get more information on this article"):
+        # Redirect to the second page
+        st.session_state.selected_page = "Article"
+        st.experimental_set_query_params(page='Article')
+        st.experimental_rerun()
 
 
 def word_cloud_pipe(df1,df2,df3,df4,df5):
