@@ -265,7 +265,7 @@ def page_home():
     #         unsafe_allow_html=True)
 
     # Define the text input box
-    topic = st.text_input("SEARCH WORD: ",'')
+    topic = st.text_input("SEARCH WORD: ",'biden')
     # st.markdown('''
     #             <style>
     #             textarea {
@@ -283,7 +283,8 @@ def page_home():
     date_2 = date[1]
 
     # click the search button for results
-    if st.button("Search",type='primary'):
+    if st.button("Search",type='primary') or st.session_state.get('searched'):
+        st.session_state['searched'] = True
 
         #add a design feature for a progress bar
         progress_bar = st.progress(0, text='searching articles... please wait')
@@ -295,6 +296,7 @@ def page_home():
         for percent_complete in range(100):
                 time.sleep(0.02)
                 progress_bar.progress(percent_complete + 1)
+
 
         # Create three columns
         col1, col2, col3 = st.columns(3)
@@ -417,33 +419,33 @@ def page_home():
 
         progress_bar.empty()
 
-        word_cloud_pipe(df_ll,df_l,df_c,df_r,df_rr)
+        lst1 = [df_ll['title'][i] for i in range(len(df_ll['title']))]
+        lst2 = [df_l['title'][i] for i in range(len(df_l['title']))]
+        lst3 = [df_c['title'][i] for i in range(len(df_c['title']))]
+        lst4 = [df_rr['title'][i] for i in range(len(df_rr['title']))]
+        lst5 = [df_r['title'][i] for i in range(len(df_r['title']))]
 
+        lst1.extend(lst2)
+        lst1.extend(lst3)
+        lst1.extend(lst4)
+        lst1.extend(lst5)
 
+        col_1_1, col_1_2 = st.columns(2)
+        with col_1_1:
+            if "selected_option" not in st.session_state:
+                st.session_state.selected_option = ""
+            selected_option = st.selectbox("Select an option", lst1)
+            st.session_state.selected_option = selected_option
 
-        if "selected_option" not in st.session_state:
-            st.session_state.selected_option = ""
-        selected_option = st.sidebar.selectbox("Select an option", (df_ll['title'][0]\
-                                                            ,df_ll['title'][1]\
-                                                            ,df_l['title'][0]\
-                                                            ,df_l['title'][1]\
-                                                            ,df_c['title'][0]\
-                                                            ,df_c['title'][1]\
-                                                            ,df_rr['title'][0]\
-                                                            ,df_rr['title'][1]\
-                                                            ,df_r['title'][0]\
-                                                            ,df_r['title'][1]))
+        with col_1_2:
+            word_cloud_pipe(df_ll,df_l,df_c,df_r,df_rr)
 
-        st.session_state.selected_option = selected_option
-        output_placeholder = st.empty()
-        st.write(selected_option)
-
-    # # Button to navigate to the second page
-    # if st.button("Get more information on this article"):
-    #     # Redirect to the second page
-    #     st.session_state.selected_page = "Article"
-    #     st.experimental_set_query_params(page='Article')
-    #     st.experimental_rerun()
+    # Button to navigate to the second page
+    if st.button("Get more information on this article"):
+        # Redirect to the second page
+        st.session_state.selected_page = "Article"
+        st.experimental_set_query_params(page='Article')
+        st.experimental_rerun()
 
 
 def word_cloud_pipe(df1,df2,df3,df4,df5):
@@ -473,7 +475,13 @@ def get_words(df1,df2,df3,df4,df5):
 
 def wordcloud(x):
     ### import mask
-    #mask = np.array(Image.open("https://raw.githubusercontent.com/zulu-tango/news_and_echo_bubbles_streamlit/master/images/news_mask.png"))
+    # mask = np.array(Image.open("https://raw.githubusercontent.com/zulu-tango/news_and_echo_bubbles_streamlit/master/images/news_mask.png"))
+
+    #mask = np.array(Image.open(os.path.abspath('raw_data/news_mask.png')))
+
+    ### instantiate word cloud
+    # wordcloud = WordCloud(mask = mask, max_font_size=500, max_words=55, background_color="white", font_path = 'raw_data/fonts/tower_of_silence/towerofsilenceexpand.ttf',
+    #                   collocations=True,colormap = 'coolwarm', contour_width=2.0, contour_color='black').generate(x) #mode="RGBA", colormap = 'Reds', background_color="rgba(255, 255, 255, 0)"
 
     ### instantiate word cloud
     wordcloud = WordCloud(max_font_size=200, max_words=55, background_color="white", #font_path = 'raw_data/fonts/tower_of_silence/towerofsilenceexpand.ttf',
@@ -483,16 +491,7 @@ def wordcloud(x):
     ax.imshow(wordcloud, interpolation="bilinear")
     #ax.set_title('Related Topics')
     ax.axis('off')
-    fig.set_size_inches(4, 3)
-
-    #st.pyplot(fig)
-    st.markdown(
-    f'<div style="width: 400px; height: 300px; overflow: hidden;">'
-    f'<img src="data:image/png;base64,{st.pyplot(fig)}" style="width: 100%; height: 100%; object-fit: cover;">'
-    f'</div>',
-    unsafe_allow_html=True
-)
-
+    st.pyplot(fig,clear_figure=True,use_container_width=True)
 
 
 def page_about():
@@ -507,8 +506,7 @@ def page_about():
 
     col_info, col_bias = st.columns(2)
 
-    wc = WordCloud(background_color="white", max_words=1000)
-    # generate word cloud
+    wc = WordCloud(background_color="white", max_words=20)
 
     if data['pred_class'][0] == 'left':
         color = '#004687'
@@ -522,7 +520,7 @@ def page_about():
         color='white'
 
     with col_info:
-        st.subheader("Info")
+        #st.subheader("Info")
         st.write(f'Title: {data.title[0]}')
         #st.write(f'Author(s): {data.author[0]}')
         st.write(f'Here is a summary of the article: <br>{data.sum_text[0]}', unsafe_allow_html=True)
@@ -551,7 +549,7 @@ def page_about():
         ax.imshow(wc, interpolation="bilinear")
         #ax.set_title('Related Topics')
         ax.axis('off')
-        st.pyplot(fig)
+        st.pyplot(fig,clear_figure=True,use_container_width=False)
 
 
     if st.button('Read full article'):
@@ -594,7 +592,6 @@ def page_profile():
     <img id='exclude-me' src="https://content.linkedin.com/content/dam/me/business/en-us/amp/brand-site/v2/bg/LI-Bug.svg.original.svg" width="20"> **LinkedIn**: https://www.linkedin.com/in/barnaby-kempster/
                 """, unsafe_allow_html=True)
     # add large blank space
-    st.write("#")
     ############################### Connor Gower info #######################################
     # create two cols, one for profile photo and the other with the social networks links
     col1, mid, col2 = st.columns([1,2,20],gap="medium")
@@ -612,7 +609,6 @@ def page_profile():
                 """, unsafe_allow_html=True)
 
     # add large blank space
-    st.write("#")
     ############################### Manuel Puente info #######################################
     # create two cols, one for profile photo and the other with the social networks links
 
@@ -631,7 +627,6 @@ def page_profile():
                 """, unsafe_allow_html=True)
 
     # add large blank space
-    st.write("#")
     ############################### Zoe Tustain info #######################################
     # create two cols, one for profile photo and the other with the social networks links
 
@@ -650,7 +645,6 @@ def page_profile():
                 """, unsafe_allow_html=True)
 
     # add large blank space
-    st.write("#")
     ############################### COMLAN Renato info #######################################
     # create two cols, one for profile photo and the other with the social networks links
     col1, mid, col2 = st.columns([1,2,20],gap="medium")
