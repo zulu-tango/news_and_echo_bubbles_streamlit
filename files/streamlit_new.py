@@ -296,6 +296,7 @@ def page_home():
                 time.sleep(0.02)
                 progress_bar.progress(percent_complete + 1)
 
+
         # Create three columns
         col1, col2, col3 = st.columns(3)
 
@@ -417,26 +418,26 @@ def page_home():
 
         progress_bar.empty()
 
-        word_cloud_pipe(df_ll,df_l,df_c,df_r,df_rr)
 
+        col_1_1, col_1_2 = st.columns(2)
+        with col_1_1:
+            if "selected_option" not in st.session_state:
+                st.session_state.selected_option = ""
+            selected_option = st.selectbox("Select an option", (df_ll['title'][0]\
+                                                                ,df_ll['title'][1]\
+                                                                ,df_l['title'][0]\
+                                                                ,df_l['title'][1]\
+                                                                ,df_c['title'][0]\
+                                                                ,df_c['title'][1]\
+                                                                ,df_rr['title'][0]\
+                                                                ,df_rr['title'][1]\
+                                                                ,df_r['title'][0]\
+                                                                ,df_r['title'][1]))
 
+            st.session_state.selected_option = selected_option
 
-        if "selected_option" not in st.session_state:
-            st.session_state.selected_option = ""
-        selected_option = st.sidebar.selectbox("Select an option", (df_ll['title'][0]\
-                                                            ,df_ll['title'][1]\
-                                                            ,df_l['title'][0]\
-                                                            ,df_l['title'][1]\
-                                                            ,df_c['title'][0]\
-                                                            ,df_c['title'][1]\
-                                                            ,df_rr['title'][0]\
-                                                            ,df_rr['title'][1]\
-                                                            ,df_r['title'][0]\
-                                                            ,df_r['title'][1]))
-
-        st.session_state.selected_option = selected_option
-        output_placeholder = st.empty()
-        st.write(selected_option)
+        with col_1_2:
+            word_cloud_pipe(df_ll,df_l,df_c,df_r,df_rr)
 
     # # Button to navigate to the second page
     # if st.button("Get more information on this article"):
@@ -483,15 +484,7 @@ def wordcloud(x):
     ax.imshow(wordcloud, interpolation="bilinear")
     #ax.set_title('Related Topics')
     ax.axis('off')
-    fig.set_size_inches(4, 3)
-
-    #st.pyplot(fig)
-    st.markdown(
-    f'<div style="width: 400px; height: 300px; overflow: hidden;">'
-    f'<img src="data:image/png;base64,{st.pyplot(fig)}" style="width: 100%; height: 100%; object-fit: cover;">'
-    f'</div>',
-    unsafe_allow_html=True
-)
+    st.pyplot(fig,clear_figure=True,use_container_width=True)
 
 
 
@@ -507,8 +500,7 @@ def page_about():
 
     col_info, col_bias = st.columns(2)
 
-    wc = WordCloud(background_color="white", max_words=1000)
-    # generate word cloud
+    wc = WordCloud(background_color="white", max_words=20)
 
     if data['pred_class'][0] == 'left':
         color = '#004687'
@@ -522,7 +514,7 @@ def page_about():
         color='white'
 
     with col_info:
-        st.subheader("Info")
+        #st.subheader("Info")
         st.write(f'Title: {data.title[0]}')
         #st.write(f'Author(s): {data.author[0]}')
         st.write(f'Here is a summary of the article: <br>{data.sum_text[0]}', unsafe_allow_html=True)
@@ -551,7 +543,7 @@ def page_about():
         ax.imshow(wc, interpolation="bilinear")
         #ax.set_title('Related Topics')
         ax.axis('off')
-        st.pyplot(fig)
+        st.pyplot(fig,clear_figure=True,use_container_width=False)
 
 
     if st.button('Read full article'):
