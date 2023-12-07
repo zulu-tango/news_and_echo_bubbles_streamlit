@@ -521,9 +521,11 @@ def page_about():
 
     with col_info:
         #st.subheader("Info")
-        st.write(f'Title: {data.title[0]}')
+        #st.write(f'Title: {data.title[0]}')
+        st.markdown(f"<p style='font-size: 24px;'>Title: {data.title[0]}</p>", unsafe_allow_html=True)
+
         #st.write(f'Author(s): {data.author[0]}')
-        st.write(f'Here is a summary of the article: <br>{data.sum_text[0]}', unsafe_allow_html=True)
+        st.write(f"<p style='font-size: 16px;'>Here is a summary of the article: <br>{data.sum_text[0]}</p>", unsafe_allow_html=True)
 
     with col_bias:
         hasClicked = card(
