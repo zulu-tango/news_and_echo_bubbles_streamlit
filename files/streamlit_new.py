@@ -265,7 +265,7 @@ def page_home():
     #         unsafe_allow_html=True)
 
     # Define the text input box
-    topic = st.text_input("SEARCH WORD: ",'biden')
+    topic = st.text_input("SEARCH WORD: ",topic_1)
     # st.markdown('''
     #             <style>
     #             textarea {
@@ -585,7 +585,7 @@ def page_profile():
         st.image('https://raw.githubusercontent.com/zulu-tango/news_and_echo_bubbles_streamlit/master/images/Barney.png', width=105) #path of the picture
 
     with col2:
-        st.markdown("**Barnaby Kempster**")
+        st.markdown("**Barnaby KEMPSTER**")
         st.write("""
     <img src="https://github.githubassets.com/favicons/favicon.svg" width="20" border-radius="50"> **Github profile**: https://github.com/Barnaby323
 
@@ -599,7 +599,7 @@ def page_profile():
         st.image('https://raw.githubusercontent.com/zulu-tango/news_and_echo_bubbles_streamlit/master/images/Connor.png', width=105)#path of the picture
 
     with col2:
-        st.markdown("**Connor Gower**")
+        st.markdown("**Connor GOWER**")
         st.markdown("""
     <img class="image backArrow" src="https://github.githubassets.com/favicons/favicon.svg" width="20"> **Github profile**: https://github.com/connorgower
 
@@ -618,7 +618,7 @@ def page_profile():
         st.image('https://raw.githubusercontent.com/zulu-tango/news_and_echo_bubbles_streamlit/master/images/Manuel.png', width=105)#path of the picture
 
     with col2:
-        st.markdown("**Manuel Puente**")
+        st.markdown("**Manuel PUENTE**")
         st.write("""
     <img src="https://github.githubassets.com/favicons/favicon.svg" width="20"> **Github profile**: https://github.com/Manu2023ds
 
@@ -636,7 +636,7 @@ def page_profile():
         st.image('https://raw.githubusercontent.com/zulu-tango/news_and_echo_bubbles_streamlit/master/images/Zoe.png', width=105)#path of the picture
 
     with col2:
-        st.markdown("**Zoe Tustain**")
+        st.markdown("**Zoe TUSTAIN**")
         st.write("""
     <img src="https://github.githubassets.com/favicons/favicon.svg" width="20"> **Github profile**: https://github.com/zulu-tango
 
