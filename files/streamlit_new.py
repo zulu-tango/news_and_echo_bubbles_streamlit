@@ -283,7 +283,8 @@ def page_home():
     date_2 = date[1]
 
     # click the search button for results
-    if st.button("Search",type='primary'):
+    if st.button("Search",type='primary') or st.session_state.get('searched'):
+        st.session_state['searched'] = True
 
         #add a design feature for a progress bar
         progress_bar = st.progress(0, text='searching articles... please wait')
@@ -444,7 +445,6 @@ def page_home():
             #                                                     ,df_rr['title'][1]\
             #                                                     ,df_r['title'][0]\
             #                                                     ,df_r['title'][1]))
-
             st.session_state.selected_option = selected_option
 
         with col_1_2:
